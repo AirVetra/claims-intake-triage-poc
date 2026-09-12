@@ -1,0 +1,14 @@
+[
+  {
+    "case_id": "case_001",
+    "input_text": "First Notice of Loss received. Claimant: John Doe. Policy Number: POL-123456. Date of loss: 2026-09-10. Auto accident on highway. Vehicle collision with guardrail. Estimated loss: $25,000. Contact: john.doe@email.com, (555) 123-4567. Documents available: police report, repair estimate."
+  },
+  {
+    "case_id": "case_002",
+    "input_text": "Claim intake note: Claimant Jane Smith called. Incident: 2026-09-09. Type: property damage. Description unclear - something about water damage in basement. Contact email jane.smith@email.com. No documents attached yet. Loss amount pending assessment."
+  },
+  {
+    "case_id": "case_003",
+    "input_text": "High-value claim. Claimant: Robert Johnson. Policy: POL-789012. Incident Date: 2026-09-08. Incident Type: commercial property. Description: Fire in warehouse resulting in total loss of inventory and structure. Estimated loss: $500,000. Contact: robert@business.com, (555) 987-6543. Documents: fire department report, inventory list, insurance appraisal."
+  }
+]
