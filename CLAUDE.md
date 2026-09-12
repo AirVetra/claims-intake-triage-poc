@@ -28,8 +28,23 @@ For every non-trivial task, follow this sequence explicitly:
 4. Verify (run it, check outputs against expectations).
 5. Review the `git diff` before considering the task done.
 
+## Stage 2: AI-Assisted Extraction (Experimental)
+
+For the Stage 2 POC only, Claude API (Anthropic, `claude-sonnet-5`) may be used to:
+- Extract structured claim fields from unstructured intake text using Structured Outputs
+- Return extracted facts only; may optionally draft follow-up messages
+
+Guardrails (non-negotiable):
+- Claude extracts facts only; does not make coverage, liability, fraud, payment, or routing decisions
+- All extracted fields validated against fixed schema before use
+- Deterministic missing-field validation applied after extraction
+- No real personal data in API prompts or logs
+- API key stored locally in `.env` (not committed); never logged or printed
+- Every output flagged for explicit human review
+- Results compared quantitatively against a deterministic baseline (Stage 1)
+
+The deterministic baseline (Stage 1) is the reference system; Stage 2 is a demonstration of AI-assisted extraction quality for research purposes only.
+
 ## Status
 
-No code, build tooling, or tests exist yet — this file will gain a "Commands"
-section (run/test/lint) once the project scaffold is created. Do not invent
-commands or infrastructure ahead of that.
+No build tooling or tests exist yet. Commands will be added as the project scaffolding grows.

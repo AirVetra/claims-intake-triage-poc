@@ -29,27 +29,34 @@ def extract_claim(text):
 from unstructured claim text. If a field is not present or unclear, set it to null.
 For estimated_loss, extract only the numeric value (no currency symbol). Respond in JSON."""
 
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=1024,
-        system=system_prompt,
-        messages=[
-            {
-                "role": "user",
-                "content": f"Extract claim information from this text:\n\n{text}"
+    try:
+        response = client.messages.create(
+            model=MODEL,
+            max_tokens=1024,
+            system=system_prompt,
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Extract claim information from this text:\n\n{text}"
+                }
+            ],
+            output_config={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "ClaimRecord",
+                    "schema": CLAIM_SCHEMA,
+                    "strict": True
+                }
             }
-        ],
-        output_config={
-            "type": "json_schema",
-            "json_schema": {
-                "name": "ClaimRecord",
-                "schema": CLAIM_SCHEMA,
-                "strict": True
-            }
-        }
-    )
+        )
+    except Exception as e:
+        raise RuntimeError(f"API call failed: {e}")
 
-    extracted = json.loads(response.content[0].text)
+    try:
+        extracted = json.loads(response.content[0].text)
+    except (json.JSONDecodeError, IndexError, KeyError, AttributeError) as e:
+        raise RuntimeError(f"Failed to parse API response as JSON: {e}")
+
     return extracted
 
 
@@ -73,7 +80,8 @@ def print_summary(case_id, extracted, missing):
     for field in MANDATORY_FIELDS:
         value = extracted.get(field)
         status = "✓" if field not in missing else "✗ MISSING"
-        print(f"  {field:.<40} {value or '(null)'} {status}")
+        display_value = value if value is not None else "(null)"
+        print(f"  {field:.<40} {display_value} {status}")
 
     print(f"\nMissing Fields: {len(missing)}")
     if missing:
@@ -88,11 +96,18 @@ def print_summary(case_id, extracted, missing):
 
 def main():
     """Process synthetic cases through triage."""
+    # Resolve synthetic_cases.json relative to script location
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    cases_path = os.path.join(script_dir, "synthetic_cases.json")
+
     try:
-        with open("synthetic_cases.json") as f:
+        with open(cases_path) as f:
             cases = json.load(f)
-    except FileNotFoundError:
-        print("Error: synthetic_cases.json not found")
+    except FileNotFoundError as e:
+        print(f"Error: synthetic_cases.json not found at {cases_path}")
+        sys.exit(1)
+    except json.JSONDecodeError as e:
+        print(f"Error: synthetic_cases.json is not valid JSON: {e}")
         sys.exit(1)
 
     print(f"\n{'='*70}")
