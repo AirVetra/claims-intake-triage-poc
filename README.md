@@ -24,9 +24,10 @@ A minimal, transparent demonstration of AI-assisted claims intake using Claude A
 ## How It Works
 
 - **Input:** Synthetic claim intake text (email, call notes)
-- **Processing:** Claude API extracts 8 mandatory fields using Structured Outputs
+- **Processing:** Claude Haiku 4.5 extracts 8 mandatory fields using Structured Outputs
 - **Validation:** Missing mandatory fields are flagged
 - **Output:** Terminal summary showing extracted facts and human-review status
+- **Cost:** Lowest-cost model supporting Structured Outputs ($1.00/$5.00 per 1M tokens)
 
 ## Files
 

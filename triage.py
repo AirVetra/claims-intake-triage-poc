@@ -20,7 +20,7 @@ if not api_key:
     sys.exit(1)
 
 client = Anthropic(api_key=api_key)
-MODEL = "claude-sonnet-5"
+MODEL = "claude-haiku-4-5"
 
 
 def extract_claim(text):
