@@ -25,7 +25,7 @@ A minimal, transparent demonstration of AI-assisted claims intake using Claude A
 
 - **Input:** Synthetic claim intake text (email, call notes)
 - **Processing:** Claude Haiku 4.5 extracts 8 mandatory fields using Structured Outputs
-- **Validation:** Missing mandatory fields are flagged
+- **Validation:** Missing mandatory fields are flagged; high-value flag (>$100,000) calculated deterministically
 - **Output:** Terminal summary showing extracted facts and human-review status
 - **Cost:** Lowest-cost model supporting Structured Outputs ($1.00/$5.00 per 1M tokens)
 
@@ -33,16 +33,19 @@ A minimal, transparent demonstration of AI-assisted claims intake using Claude A
 
 - `triage.py` — Main application
 - `schemas.py` — JSON schema and field definitions
-- `synthetic_cases.json` — 3 test cases (complete, incomplete, high-value)
+- `synthetic_cases.json` — 6 test cases (complete, incomplete, high-value, boundary, zero-loss, missing-loss)
 - `requirements.txt` — Python dependencies
 - `.env.example` — Template for credentials (copy to `.env`)
 - `.gitignore` — Excludes `.env` from Git
 
 ## Synthetic Test Cases
 
-1. **case_001:** Complete intake with all fields present
-2. **case_002:** Incomplete intake with missing policy number and loss amount
-3. **case_003:** High-value claim with complete information
+1. **case_001:** Complete intake, $25,000 loss — all fields present
+2. **case_002:** Incomplete intake with missing policy, loss, documents
+3. **case_003:** High-value claim, $500,000 loss — triggers human review flag
+4. **case_004:** Boundary case, exactly $100,000 loss — no high-value flag (threshold is >$100,000)
+5. **case_005:** Zero-loss case, $0 — no high-value flag
+6. **case_006:** Missing loss case — 1 mandatory field missing
 
 ## Key Constraints
 
