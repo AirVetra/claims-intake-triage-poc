@@ -11,6 +11,7 @@ class ClaimRecord:
     estimated_loss: Optional[float]
     contact_details: Optional[str]
     available_documents: Optional[str]
+    high_value_flag: Optional[bool]
 
 CLAIM_SCHEMA = {
     "type": "object",
@@ -22,7 +23,8 @@ CLAIM_SCHEMA = {
         "incident_description": {"type": ["string", "null"]},
         "estimated_loss": {"type": ["number", "null"]},
         "contact_details": {"type": ["string", "null"]},
-        "available_documents": {"type": ["string", "null"]}
+        "available_documents": {"type": ["string", "null"]},
+        "high_value_flag": {"type": ["boolean", "null"]}
     },
     "required": [
         "claimant_name",
@@ -32,7 +34,8 @@ CLAIM_SCHEMA = {
         "incident_description",
         "estimated_loss",
         "contact_details",
-        "available_documents"
+        "available_documents",
+        "high_value_flag"
     ],
     "additionalProperties": False
 }

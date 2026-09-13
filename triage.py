@@ -55,6 +55,10 @@ For estimated_loss, extract only the numeric value (no currency symbol). Respond
     except (json.JSONDecodeError, IndexError, KeyError, AttributeError) as e:
         raise RuntimeError(f"Failed to parse API response as JSON: {e}")
 
+    # Set high_value_flag if estimated_loss > 100000
+    if extracted.get("estimated_loss") and extracted["estimated_loss"] > 100000:
+        extracted["high_value_flag"] = True
+
     return extracted
 
 
@@ -87,7 +91,10 @@ def print_summary(case_id, extracted, missing):
             print(f"  - {field}")
         print(f"\n🚨 HUMAN REVIEW REQUIRED: {len(missing)} mandatory field(s) missing")
     else:
-        print(f"\n✅ all mandatory fields present — human review required")
+        print(f"\n✅ All mandatory fields present — human review required.")
+
+    if extracted.get("high_value_flag"):
+        print(f"\n💰 High-value claim — human review required.")
 
     print()
 
