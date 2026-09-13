@@ -10,5 +10,17 @@
   {
     "case_id": "case_003",
     "input_text": "High-value claim. Claimant: Robert Johnson. Policy: POL-789012. Incident Date: 2026-09-08. Incident Type: commercial property. Description: Fire in warehouse resulting in total loss of inventory and structure. Estimated loss: $500,000. Contact: robert@business.com, (555) 987-6543. Documents: fire department report, inventory list, insurance appraisal."
+  },
+  {
+    "case_id": "case_004",
+    "input_text": "Threshold test case. Claimant: Alice Brown. Policy Number: POL-456789. Date of loss: 2026-09-07. Incident Type: vehicle damage. Description: Minor collision in parking lot. Estimated loss: $100,000. Contact: alice.brown@email.com, (555) 456-7890. Documents: photos, estimate."
+  },
+  {
+    "case_id": "case_005",
+    "input_text": "Zero loss case. Claimant: Bob Wilson. Policy Number: POL-567890. Date of loss: 2026-09-06. Incident Type: property. Description: Small scratch on building exterior. Estimated loss: $0. Contact: bob.wilson@email.com, (555) 567-8901. Documents: inspection report."
+  },
+  {
+    "case_id": "case_006",
+    "input_text": "Missing loss case. Claimant: Carol Davis. Policy Number: POL-678901. Date of loss: 2026-09-05. Incident Type: incident. Description: Undetermined damage pending assessment. Contact: carol.davis@email.com, (555) 678-9012. Documents: preliminary report."
   }
 ]

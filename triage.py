@@ -55,9 +55,11 @@ For estimated_loss, extract only the numeric value (no currency symbol). Respond
     except (json.JSONDecodeError, IndexError, KeyError, AttributeError) as e:
         raise RuntimeError(f"Failed to parse API response as JSON: {e}")
 
-    # Set high_value_flag if estimated_loss > 100000
-    if extracted.get("estimated_loss") and extracted["estimated_loss"] > 100000:
-        extracted["high_value_flag"] = True
+    # Deterministic high_value_flag: true only if loss > 100000
+    if extracted.get("estimated_loss") is not None:
+        extracted["high_value_flag"] = extracted["estimated_loss"] > 100000
+    else:
+        extracted["high_value_flag"] = None
 
     return extracted
 
