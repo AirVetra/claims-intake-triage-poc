@@ -33,7 +33,8 @@ CLAIM_SCHEMA = {
         "estimated_loss",
         "contact_details",
         "available_documents"
-    ]
+    ],
+    "additionalProperties": False
 }
 
 MANDATORY_FIELDS = [

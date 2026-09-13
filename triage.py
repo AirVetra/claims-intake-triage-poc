@@ -41,11 +41,9 @@ For estimated_loss, extract only the numeric value (no currency symbol). Respond
                 }
             ],
             output_config={
-                "type": "json_schema",
-                "json_schema": {
-                    "name": "ClaimRecord",
-                    "schema": CLAIM_SCHEMA,
-                    "strict": True
+                "format": {
+                    "type": "json_schema",
+                    "schema": CLAIM_SCHEMA
                 }
             }
         )
@@ -89,7 +87,7 @@ def print_summary(case_id, extracted, missing):
             print(f"  - {field}")
         print(f"\n🚨 HUMAN REVIEW REQUIRED: {len(missing)} mandatory field(s) missing")
     else:
-        print(f"\n✅ ALL MANDATORY FIELDS PRESENT: Ready for processing")
+        print(f"\n✅ all mandatory fields present — human review required")
 
     print()
 
