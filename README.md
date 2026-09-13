@@ -13,22 +13,48 @@ Synthetic-claims extraction POC with deterministic review flags. Extracts struct
 
 ## Quick Start
 
-1. **Install dependencies:**
+Complete local setup and verified run path:
+
+1. **Create virtual environment:**
+   ```bash
+   python3 -m venv .venv
+   ```
+
+2. **Activate virtual environment:**
+   ```bash
+   source .venv/bin/activate
+   # On Windows: .venv\Scripts\activate
+   ```
+
+3. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Create `.env` (local, not committed):**
+4. **Create local `.env` file:**
    ```bash
    cp .env.example .env
-   # Edit .env and add your Anthropic API key:
-   # ANTHROPIC_API_KEY=sk-proj-...
    ```
 
-3. **Run the triage:**
+5. **Add your Anthropic API key (local only, do not commit):**
+   ```bash
+   # Edit .env and add:
+   # ANTHROPIC_API_KEY=sk-proj-your-key-here
+   ```
+
+6. **Run the triage:**
    ```bash
    python3 triage.py
    ```
+
+## Pre-flight Check
+
+Before running, verify:
+- **`.env` exists locally** with your API key set (never commit this file)
+- **Virtual environment is active** (you should see `(.venv)` in your prompt)
+- **All 6 synthetic cases run successfully** (`python3 triage.py` completes without errors)
+- **Audit traces created** in `audit_traces/` directory with no errors or warnings
+- **No API key printed or logged** anywhere in terminal output or trace files
 
 ## Verification
 
@@ -48,6 +74,30 @@ Each run saves per-run audit records to `audit_traces/{trace_id}.json`:
 - **Loss bucketed:** Estimated loss stored as category (`zero`, `1_to_100k`, `over_100k`, `missing`) — not amount
 - **Derived outcomes:** High-value flag, threshold version, missing field count, human review required
 - **API metrics:** Model latency (ms), token usage (input/output)
+
+## Real Claims (Production Limitation)
+
+**This POC accepts only `synthetic_cases.json`.**
+
+Do NOT use this system to ingest real claims:
+- Do not put real personal data or PII into local JSON files
+- Do not persist real claims in audit traces
+- Local traces are not encrypted, access-controlled, or retention-managed
+- This is a demonstration system, not a production claims handler
+
+**Production ingestion requires:**
+- An approved secure channel (e.g., authenticated API, signed uploads, secure queue)
+- Access controls and user authentication
+- Data retention policy and automated redaction
+- Encryption at rest and in transit
+- Privacy and compliance review (jurisdiction-specific)
+
+**Future interface (not implemented):**
+- Validated input adapter or CLI with schema enforcement
+- PII handled outside local logs (hashed at intake, tokenized in storage)
+- Separate secure storage for raw claims (not in audit traces)
+
+For now: development and testing only with synthetic data.
 
 ## Privacy & Limitations
 
