@@ -1,6 +1,15 @@
 # Insurance Underwriting & Claims Triage POC
 
-A minimal, transparent demonstration of AI-assisted claims intake using Claude API with Structured Outputs.
+## Purpose
+
+Synthetic-claims extraction POC with deterministic review flags. Extracts structured claim fields from unstructured intake text and flags cases requiring human review based on completeness and estimated loss thresholds.
+
+## Architecture
+
+- **Extraction:** Claude Haiku 4.5 extracts 8 mandatory fields (claimant name, policy number, incident date/type/description, estimated loss, contact details, available documents) using Structured Outputs.
+- **Derivation:** Python deterministically calculates `high_value_flag` (true if loss > $100,000; false/null otherwise) — Claude does not participate in this decision.
+- **Review:** All cases flagged for human review if any mandatory field is missing or loss exceeds $100,000.
+- **Audit Trail:** Privacy-minimized per-run records saved to `audit_traces/` (metadata, field-presence status, bucketed loss, derived outcomes).
 
 ## Quick Start
 
@@ -18,39 +27,51 @@ A minimal, transparent demonstration of AI-assisted claims intake using Claude A
 
 3. **Run the triage:**
    ```bash
-   python triage.py
+   python3 triage.py
    ```
 
-## How It Works
+## Verification
 
-- **Input:** Synthetic claim intake text (email, call notes)
-- **Processing:** Claude Haiku 4.5 extracts 8 mandatory fields using Structured Outputs
-- **Validation:** Missing mandatory fields are flagged; high-value flag (>$100,000) calculated deterministically
-- **Output:** Terminal summary showing extracted facts and human-review status
-- **Cost:** Lowest-cost model supporting Structured Outputs ($1.00/$5.00 per 1M tokens)
+Six synthetic test cases cover:
+- **case_001:** Complete intake, $25,000 loss
+- **case_002:** Incomplete (missing policy, loss, documents)
+- **case_003:** High-value claim, $500,000 loss (triggers flag)
+- **case_004:** Boundary case, exactly $100,000 (no flag; threshold is >$100,000)
+- **case_005:** Zero-loss case, $0 (no flag)
+- **case_006:** Missing loss field only (1 missing mandatory field)
+
+## Audit Traces
+
+Each run saves per-run audit records to `audit_traces/{trace_id}.json`:
+- **Metadata:** Trace ID, case ID, timestamp, git commit, app version, model version
+- **Field presence:** Status of each extracted field (present/missing/null) — not raw values
+- **Loss bucketed:** Estimated loss stored as category (`zero`, `1_to_100k`, `over_100k`, `missing`) — not amount
+- **Derived outcomes:** High-value flag, threshold version, missing field count, human review required
+- **API metrics:** Model latency (ms), token usage (input/output)
+
+## Privacy & Limitations
+
+**Privacy (Current):**
+- No raw PII stored in audit traces (names, policy numbers, contact details, incident descriptions excluded)
+- Input text hashed (SHA-256) but never persisted
+- Estimated loss bucketed, not stored as exact amount
+- Synthetic data only; real personal data never used in this POC
+
+**Limitations (Not Production-Ready):**
+- Audit traces are local JSON files: not immutable, not tamper-evident, not access-controlled
+- This is an EU AI Act-inspired auditability pattern demonstration, not legal compliance
+- Production deployment would require: append-only database, cryptographic signing, retention enforcement, access logging
+
+**Credentials:**
+- API key must be stored locally in `.env` (not committed to Git)
+- `.env` is in `.gitignore`; never expose or share your key
 
 ## Files
 
 - `triage.py` — Main application
+- `audit_trail.py` — Privacy-minimized audit trail module
 - `schemas.py` — JSON schema and field definitions
-- `synthetic_cases.json` — 6 test cases (complete, incomplete, high-value, boundary, zero-loss, missing-loss)
+- `synthetic_cases.json` — 6 test cases
 - `requirements.txt` — Python dependencies
-- `.env.example` — Template for credentials (copy to `.env`)
-- `.gitignore` — Excludes `.env` from Git
-
-## Synthetic Test Cases
-
-1. **case_001:** Complete intake, $25,000 loss — all fields present
-2. **case_002:** Incomplete intake with missing policy, loss, documents
-3. **case_003:** High-value claim, $500,000 loss — triggers human review flag
-4. **case_004:** Boundary case, exactly $100,000 loss — no high-value flag (threshold is >$100,000)
-5. **case_005:** Zero-loss case, $0 — no high-value flag
-6. **case_006:** Missing loss case — 1 mandatory field missing
-
-## Key Constraints
-
-- Synthetic data only (no real personal information)
-- No API key in Git (`.env` is ignored)
-- Transparent Structured Outputs validation
-- Deterministic missing-field check
-- No coverage, liability, fraud, or payment decisions
+- `.env.example` — Template for credentials (copy to `.env`, add your key)
+- `.gitignore` — Excludes `.env` and `audit_traces/`
