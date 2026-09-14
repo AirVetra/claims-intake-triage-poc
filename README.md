@@ -47,6 +47,23 @@ Complete local setup and verified run path:
    python3 triage.py
    ```
 
+## Demo Readiness Check
+
+Verify your setup is complete and ready for demonstration:
+
+```bash
+/demo-readiness
+```
+
+This automated skill will:
+- **Detect your stack** (Python version, dependencies, entry points)
+- **Verify API connectivity** (confirm API key works by running all 6 synthetic cases)
+- **Test extraction & triage logic** (all mandatory fields extracted, flags applied correctly)
+- **Validate audit trails** (privacy-minimized traces created with no PII or API key leaks)
+- **Report readiness status** (GO / GO WITH RISKS / NO-GO with evidence)
+
+Example output: `Status: GO` means all checks passed and you're ready to demonstrate.
+
 ## Pre-flight Check
 
 Before running, verify:
