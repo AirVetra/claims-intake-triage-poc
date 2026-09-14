@@ -1,5 +1,9 @@
 # Insurance Underwriting & Claims Triage POC
 
+## Development History
+
+For reviewers joining before a live co-building session: [`docs/development-scenario.html`](docs/development-scenario.html) is the full build narrative — the discovery interview that scoped this POC, the rejected first plan, the high-value-flag architecture fight, and the audit-trail privacy rework. Open it in a browser (not rendered by GitHub's file viewer).
+
 ## Purpose
 
 Synthetic-claims extraction POC with deterministic review flags. Extracts structured claim fields from unstructured intake text and flags cases requiring human review based on completeness and estimated loss thresholds.

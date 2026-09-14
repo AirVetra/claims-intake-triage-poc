@@ -1,0 +1,583 @@
+<title>Claims Intake Triage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper: #E8ECE9;
+    --paper-raised: #F4F6F3;
+    --ink: #1A2229;
+    --ink-soft: #3A443F;
+    --slate: #5C6B66;
+    --line: #C7CDC7;
+    --line-strong: #A8B3AC;
+    --flag: #A8681A;
+    --flag-soft: #EFE0C8;
+    --verified: #2E6B5E;
+    --verified-soft: #DCE9E5;
+    --shadow: 220 15% 20%;
+
+    --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    --font-body: "Source Sans 3", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper: #12181A;
+      --paper-raised: #182022;
+      --ink: #E7ECE8;
+      --ink-soft: #C4CEC8;
+      --slate: #8CA39B;
+      --line: #2B3634;
+      --line-strong: #3D4A46;
+      --flag: #E3A544;
+      --flag-soft: #3A2E17;
+      --verified: #5FB3A0;
+      --verified-soft: #17302B;
+    }
+  }
+
+  :root[data-theme="dark"]{
+    --paper: #12181A;
+    --paper-raised: #182022;
+    --ink: #E7ECE8;
+    --ink-soft: #C4CEC8;
+    --slate: #8CA39B;
+    --line: #2B3634;
+    --line-strong: #3D4A46;
+    --flag: #E3A544;
+    --flag-soft: #3A2E17;
+    --verified: #5FB3A0;
+    --verified-soft: #17302B;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ text-size-adjust: 100%; }
+
+  body{
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection{ background: var(--flag-soft); color: var(--ink); }
+
+  a{ color: var(--verified); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+  .wrap{
+    max-width: 900px;
+    margin: 0 auto;
+    padding: clamp(28px, 6vw, 72px) clamp(20px, 5vw, 40px) 120px;
+  }
+
+  /* ---------- Cover ---------- */
+  .cover{
+    padding-bottom: 44px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 48px;
+  }
+  .eyebrow{
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin: 0 0 18px;
+  }
+  .eyebrow::before{ content: "◆ "; color: var(--flag); }
+  h1.title{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+    margin: 0 0 20px;
+    text-wrap: balance;
+  }
+  .thesis{
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.15rem, 2.4vw, 1.4rem);
+    color: var(--ink-soft);
+    max-width: 62ch;
+    margin: 0 0 28px;
+    text-wrap: balance;
+  }
+  .ledger-meta{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--slate);
+    font-variant-numeric: tabular-nums;
+  }
+  .ledger-meta span b{ color: var(--ink-soft); font-weight: 600; }
+
+  /* ---------- Section scaffolding ---------- */
+  section{ margin-bottom: 64px; }
+  .section-head{
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .phase-num{
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--slate);
+    border: 1px solid var(--line-strong);
+    border-radius: 3px;
+    padding: 2px 7px;
+    flex: none;
+  }
+  h2{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.4rem, 3vw, 1.75rem);
+    margin: 0;
+    text-wrap: balance;
+  }
+  h3{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.15rem;
+    margin: 0 0 10px;
+  }
+  p{ max-width: 68ch; margin: 0 0 14px; color: var(--ink-soft); }
+  section > p:first-of-type{ margin-top: 0; }
+
+  .lede{ font-size: 1.08rem; color: var(--ink); }
+
+  /* ---------- Quote / decision record ---------- */
+  blockquote{
+    margin: 20px 0;
+    padding: 16px 20px;
+    background: var(--paper-raised);
+    border-left: 3px solid var(--flag);
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    white-space: pre-wrap;
+    max-width: 68ch;
+  }
+  blockquote cite{
+    display: block;
+    margin-top: 10px;
+    font-style: normal;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--slate);
+  }
+
+  /* ---------- Discovery table ---------- */
+  .discovery{
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--paper-raised);
+  }
+  .drow{
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 18px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .drow:last-child{ border-bottom: none; }
+  .dkey{
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--verified);
+    font-weight: 600;
+  }
+  .dval{ font-size: 15px; color: var(--ink-soft); margin: 0; }
+  .overflow-x{ overflow-x: auto; }
+
+  @media (max-width: 620px){
+    .drow{ grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* ---------- Timeline / phase cards ---------- */
+  .phase{
+    border: 1px solid var(--line);
+    border-left-width: 3px;
+    border-radius: 3px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    background: var(--paper-raised);
+  }
+  .phase.build{ border-left-color: var(--verified); }
+  .phase.catch{ border-left-color: var(--flag); }
+  .phase-top{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+    margin-bottom: 10px;
+  }
+  .phase-title{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.08rem;
+    margin: 0;
+  }
+  .tag{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .tag.build{ background: var(--verified-soft); color: var(--verified); }
+  .tag.catch{ background: var(--flag-soft); color: var(--flag); }
+  .commits{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .commit-chip{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--slate);
+    border: 1px solid var(--line-strong);
+    border-radius: 3px;
+    padding: 2px 7px;
+    white-space: nowrap;
+  }
+  .phase p{ margin-bottom: 10px; font-size: 15px; }
+  .phase p:last-child{ margin-bottom: 0; }
+  .phase-date{
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--slate);
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Principle cards ---------- */
+  .principles{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  .principle{
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 18px 20px;
+    background: var(--paper-raised);
+  }
+  .principle .pn{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--flag);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .principle h4{
+    font-family: var(--font-display);
+    font-size: 1.02rem;
+    font-weight: 600;
+    margin: 0 0 8px;
+  }
+  .principle p{ font-size: 14px; margin: 0; }
+
+  /* ---------- Status table ---------- */
+  table.status{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+  }
+  table.status th, table.status td{
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  table.status th{
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 600;
+  }
+  .ok{ color: var(--verified); font-weight: 600; }
+
+  /* ---------- Note / disclosure box ---------- */
+  .note{
+    border: 1px dashed var(--line-strong);
+    border-radius: 4px;
+    padding: 16px 20px;
+    background: transparent;
+    font-size: 14.5px;
+  }
+  .note strong{ color: var(--ink); }
+
+  /* ---------- Byproducts ---------- */
+  .skills{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .skill-card{
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 20px;
+    background: var(--paper-raised);
+  }
+  .skill-card code{
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--verified-soft);
+    color: var(--verified);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  footer{
+    border-top: 1px solid var(--line);
+    padding-top: 24px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--slate);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  @media (prefers-reduced-motion: no-preference){
+    .phase, .principle, .discovery{ transition: border-color 0.2s ease; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="cover">
+    <p class="eyebrow">Case File · Development Ledger</p>
+    <h1 class="title">Claims Intake Triage</h1>
+    <p class="thesis">How a synthetic-data insurance POC went from a discovery conversation to a privacy-minimized, deterministic triage system — thirteen commits, three architecture course-corrections, and one rule that survived every rewrite: <em>Claude extracts facts, code makes the call.</em></p>
+    <div class="ledger-meta">
+      <span><b>Repo</b> claims-intake-triage-poc</span>
+      <span><b>Span</b> 2026‑09‑12 → 2026‑09‑14</span>
+      <span><b>Commits</b> 13</span>
+      <span><b>Model</b> Sonnet 5 → Haiku 4.5</span>
+    </div>
+  </header>
+
+  <section>
+    <p class="lede">This is the full build history, reconstructed from the session transcript and the git log — including the parts that didn't make it into any commit message: the false starts, the plan that got rejected, and the bugs a clean environment surfaced that a working laptop had been quietly hiding.</p>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="phase-num">00</span><h2>Before there was a plan</h2></div>
+    <p>The very first two prompts weren't about insurance at all — a generic "analyze this codebase and write a CLAUDE.md" and an "explore this repository" request, the default way of orienting inside an empty repo. Both were superseded within minutes once the actual brief arrived: a training POC called <strong>Insurance Underwriting &amp; Claims Triage</strong>, scoped tightly from the start — Python 3.11+, synthetic data only, no LLM inference in the first cut, an explicit Explore → Plan → Implement → Verify → Diff workflow for everything that followed.</p>
+    <p>That guardrail file was committed before a single line of application code existed.</p>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="phase-num">01</span><h2>Discovery, before code</h2></div>
+    <p>Before proposing any solution, a personal reusable skill — <code>/discovery</code> — was built: an eight-question business-requirements interview. It was run once, in full, against this exact problem.</p>
+    <div class="discovery overflow-x">
+      <div class="drow"><div class="dkey">Process</div><p class="dval">Adjusters read unstructured FNOL emails and call notes, identify policyholder, incident, loss and documents, then build a case summary and next step by hand.</p></div>
+      <div class="drow"><div class="dkey">User</div><p class="dval">Claims intake specialists and adjusters — domain-competent, burdened by repetitive reading and data entry.</p></div>
+      <div class="drow"><div class="dkey">Manual effort</div><p class="dval">~15–20 minutes per case; hundreds to thousands of cases a month.</p></div>
+      <div class="drow"><div class="dkey">Business pain</div><p class="dval">Repetitive work, inconsistent summaries, delayed routing, missed document requests — senior adjusters pulled off complex claims.</p></div>
+      <div class="drow"><div class="dkey">Available data</div><p class="dval">Synthetic emails and call notes for the POC; production would pull from email, CRM, policy admin, document repositories.</p></div>
+      <div class="drow"><div class="dkey">Risks</div><p class="dval">Wrong extraction, missing fields, PII exposure, misrouting — and explicitly: <em>must not make coverage, liability, fraud, or payment decisions.</em> A human stays accountable.</p></div>
+      <div class="drow"><div class="dkey">Success metric</div><p class="dval">Less prep time, higher field completeness, correct review-flagging. ROI = minutes saved × case volume × loaded staff cost.</p></div>
+      <div class="drow"><div class="dkey">Time limit</div><p class="dval">A working POC inside about an hour, on a small synthetic set.</p></div>
+    </div>
+    <p style="margin-top:16px">Risk answer #6 is worth holding onto — <em>the system must not make coverage, liability, fraud, or payment decisions</em> — because it is the exact line that gets re-litigated, in code, three phases later.</p>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="phase-num">02</span><h2>The plan gets rejected</h2></div>
+    <p>The first plan built from that discovery was a deterministic, regex-and-heuristics baseline — safe, and exactly what the original <code>CLAUDE.md</code> asked for. It was turned down on the spot:</p>
+    <blockquote>Do not implement this plan yet.
+
+This is a useful deterministic baseline, but it does not demonstrate an AI-assisted workflow because it uses only regex and heuristics.
+
+Please revise the plan into two explicit stages:
+Stage 1 — Baseline: deterministic extraction and routing, synthetic cases and tests.
+Stage 2 — AI-assisted POC: the smallest safe way to use Claude for extracting structured fields.<cite>Plan review — rejection of the pure rule-based approach</cite></blockquote>
+    <p>Two more rounds locked the architecture down before anything was built: credentials would live in a local <code>.env</code>, never in the Claude Code shell environment (a Pro-subscription workflow, not an API key export); extraction had to use real Structured Outputs (<code>output_config.format</code> with a JSON schema) — never "ask the model to return JSON" and hope.</p>
+    <p>Then, scope was cut hard — back down to a single pipeline:</p>
+    <blockquote>Let's reduce scope before implementation.
+
+Build one minimal end-to-end POC only:
+synthetic claim text → Claude Structured Output extracts the fixed fields →
+deterministic missing-field check → terminal summary with "human review required".
+
+Do not build Stage 1 baseline, routing logic, evaluation report, follow-up drafting,
+config.json, or comparison files.<cite>Scope reduction — down to seven files</cite></blockquote>
+    <p>The two-stage evaluation framework was never built. Looking back at the discovery answers, it didn't need to be — the success metric was completeness and correct flagging, not a side-by-side benchmark. The cut tracked the actual requirement.</p>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="phase-num">—</span><h2>The build, phase by phase</h2></div>
+    <p>From here, the work proceeded as a sequence of small, reviewed, individually-approved changes — each one run and verified before the next was proposed.</p>
+
+    <div class="phase build">
+      <div class="phase-top">
+        <span class="tag build">Build</span>
+        <h3 class="phase-title">Core pipeline stands up</h3>
+        <span class="phase-date">2026‑09‑12</span>
+      </div>
+      <p>The seven minimal files were created — <code>schemas.py</code>, <code>triage.py</code>, <code>synthetic_cases.json</code>, <code>.env.example</code>, <code>requirements.txt</code>, <code>.gitignore</code>, <code>README.md</code> — wiring Claude Sonnet 5 to Structured Outputs for the eight mandatory claim fields. A review pass added error wrapping around the API call and JSON parse, then the model was switched to <strong>Claude Haiku 4.5</strong> once confirmed to support Structured Outputs, purely for cost — fact-extraction doesn't need a frontier model.</p>
+      <div class="commits">
+        <span class="commit-chip">5d306c1 guardrails</span>
+        <span class="commit-chip">02930a4 minimal POC</span>
+        <span class="commit-chip">cd500f4 reliability</span>
+        <span class="commit-chip">994e5a2 → Haiku 4.5</span>
+      </div>
+    </div>
+
+    <div class="phase catch">
+      <div class="phase-top">
+        <span class="tag catch">Language discipline</span>
+        <h3 class="phase-title">"Ready" is not a safe word</h3>
+        <span class="phase-date">2026‑09‑12</span>
+      </div>
+      <p>A wording-only pass replaced every terminal status that said <em>"ready"</em> or <em>"ready to process"</em> with an explicit <em>"all mandatory fields present — human review required."</em> Small change, but it's the first appearance of a rule that resurfaces later at a much larger scale: the system's own language must never imply more autonomy than the code actually has.</p>
+      <div class="commits"><span class="commit-chip">e2da21b API format + wording</span></div>
+    </div>
+
+    <div class="phase catch">
+      <div class="phase-top">
+        <span class="tag catch">Architecture fight</span>
+        <h3 class="phase-title">The high-value flag saga</h3>
+        <span class="phase-date">2026‑09‑13</span>
+      </div>
+      <p>A high-value rule was added the obvious way: ask the model to set <code>high_value_flag</code> when loss exceeded a threshold, raised from $10,000 to a realistic $100,000. Near the boundary the flag came back inconsistent — because the model had quietly been handed a judgment call, not a fact to extract. That's exactly what discovery risk #6 had warned against.</p>
+      <p>The fix was architectural, not cosmetic: <code>high_value_flag</code> was removed from the Claude schema and the required-fields list entirely. Python now recalculates it deterministically, after extraction, every time — closing a companion bug where <code>if estimated_loss:</code> had been silently treating a real $0 claim as missing data. Three edge cases were then locked in as regression tests: the exact $100,000 boundary, a genuine $0 loss, and a case with the loss field missing outright.</p>
+      <div class="commits">
+        <span class="commit-chip">536a702 flag added</span>
+        <span class="commit-chip">426a5d3 deterministic + edge cases</span>
+        <span class="commit-chip">cd617e7 docs</span>
+      </div>
+    </div>
+
+    <div class="phase build">
+      <div class="phase-top">
+        <span class="tag build">Governance</span>
+        <h3 class="phase-title">Three trace schemas, then a rebuild</h3>
+        <span class="phase-date">2026‑09‑13</span>
+      </div>
+      <p>To make every run auditable, three trace-schema shapes were weighed — a flat record, a layered record, an append-only event stream — framed explicitly as an <em>EU AI Act–inspired auditability pattern, not legal compliance</em>. The layered schema won on clarity and effort. The first build of it overreached: claimant name, policy number and contact details went into the trace files as raw text. Caught in review before commit, it was rebuilt privacy-minimized — field <em>presence</em> status only (<code>present</code> / <code>null</code> / <code>missing</code>), loss reduced to a bucket (<code>zero</code>, <code>1_to_100k</code>, <code>over_100k</code>, <code>missing</code>), input hashed rather than stored.</p>
+      <p>A second, subtler defect followed the same review discipline: the documentation called the trace files <em>"immutable,"</em> while the code underneath simply wrote plain JSON to disk. Wording only — <em>"per-run audit records,"</em> not immutable ones — was corrected in both the README and the docstring, with zero logic touched.</p>
+      <div class="commits"><span class="commit-chip">5f7bcc2 privacy-minimized traces</span></div>
+    </div>
+
+    <div class="phase catch">
+      <div class="phase-top">
+        <span class="tag catch">Clean-room proof</span>
+        <h3 class="phase-title">A fresh venv found what the laptop hid</h3>
+        <span class="phase-date">2026‑09‑13</span>
+      </div>
+      <p>The README never mentioned activating a virtual environment — a real onboarding blocker, flagged directly. Verifying the full setup path in a genuinely fresh <code>venv</code> surfaced something worse: <code>requirements.txt</code> pinned <code>anthropic==0.45.0</code>, a version that doesn't even have the <code>output_config</code> parameter the whole extraction path runs on. It worked locally only because the working directory's own environment had long since drifted ahead of the pinned version. Fixed to <code>1.5.0</code>, re-verified end to end — all six synthetic cases passing, clean exit codes at every step.</p>
+      <div class="commits">
+        <span class="commit-chip">dbce1a0 critical path + guardrails</span>
+        <span class="commit-chip">3077210 fix pinned SDK version</span>
+      </div>
+    </div>
+
+    <div class="phase build">
+      <div class="phase-top">
+        <span class="tag build">Alignment</span>
+        <h3 class="phase-title">Making the guardrails match the ship</h3>
+        <span class="phase-date">2026‑09‑13</span>
+      </div>
+      <p><code>CLAUDE.md</code> still described the original idea — risk-tier classification, no LLM inference, Sonnet 5 — none of which was what had actually been built. It was rewritten to match reality: extraction plus deterministic flagging, Claude Haiku 4.5 with Structured Outputs, and an honest status section listing exactly what production would still require — append-only storage, access-control logging, encryption, compliance review.</p>
+      <div class="commits"><span class="commit-chip">aaecc7d docs: clarify guardrails</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="phase-num">◆</span><h2>Two tools that outlived the project</h2></div>
+    <p>Two reusable, personal skills came out of this build — both deliberately kept out of the project repository, because neither is a deliverable of this POC.</p>
+    <div class="skills">
+      <div class="skill-card">
+        <h3><code>/discovery</code></h3>
+        <p style="margin-top:10px">The eight-question business-requirements interview that opened this whole project. Built first, used once so far, saved as a standing tool for the next automation idea.</p>
+      </div>
+      <div class="skill-card">
+        <h3><code>/eu-ai-act-governance-review</code></h3>
+        <p style="margin-top:10px">The audit-trail review method — evidence-first, severity-ranked, explicitly not legal advice — generalized from this project's own governance work into a repo-agnostic checklist for the next AI POC.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="note">
+      <strong>One commit doesn't fit this narrative.</strong> <code>2763bd4</code> — "docs: add demo-readiness skill to README" — is dated 2026‑09‑14, a day after the last verified action traced here, and describes a <code>/demo-readiness</code> skill this session has no record of building. It most likely came from a concurrent Claude Code session working the same repository. Included for completeness; not confirmed against this transcript.
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>What kept getting re-learned</h2></div>
+    <div class="principles">
+      <div class="principle">
+        <span class="pn">01</span>
+        <h4>Extraction is fact. Code is judgment.</h4>
+        <p>The moment a threshold or a flag lived inside the model's schema, it got inconsistent. Every derived decision moved to deterministic code, every time this was tested.</p>
+      </div>
+      <div class="principle">
+        <span class="pn">02</span>
+        <h4>Never claim more than the code proves.</h4>
+        <p>"Ready" became "human review required." "Immutable" became "per-run record." Two unrelated fixes, one rule.</p>
+      </div>
+      <div class="principle">
+        <span class="pn">03</span>
+        <h4>Discovery before code.</h4>
+        <p>The eight-question interview is what made the later scope cut correct instead of arbitrary — it named the actual success metric before any plan existed.</p>
+      </div>
+      <div class="principle">
+        <span class="pn">04</span>
+        <h4>Prove it in a clean room.</h4>
+        <p>A stale <code>requirements.txt</code> survived every local test run. Only a fresh <code>venv</code> caught it.</p>
+      </div>
+      <div class="principle">
+        <span class="pn">05</span>
+        <h4>Governance is a constraint, not a report.</h4>
+        <p>Privacy-minimization was designed into the trace schema before the first commit of it — not audited in afterward.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Where it stands</h2></div>
+    <table class="status">
+      <thead><tr><th>Component</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Extraction pipeline (Claude Haiku 4.5, Structured Outputs)</td><td class="ok">Verified</td></tr>
+        <tr><td>Deterministic high-value flag + edge cases (boundary, zero, missing)</td><td class="ok">Verified</td></tr>
+        <tr><td>Privacy-minimized audit trail (no raw PII, bucketed loss)</td><td class="ok">Verified</td></tr>
+        <tr><td>Clean-room reproducibility (fresh venv, pinned dependencies)</td><td class="ok">Verified</td></tr>
+        <tr><td>Docs aligned with shipped behavior (CLAUDE.md, README)</td><td class="ok">Verified</td></tr>
+        <tr><td>Production hardening (encryption, access control, tamper-evidence)</td><td>Not started — documented as a gap</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    <span>claims-intake-triage-poc</span>
+    <span>Synthetic data only · Not legal or compliance advice</span>
+  </footer>
+
+</div>
